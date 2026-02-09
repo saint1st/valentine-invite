@@ -1,65 +1,115 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const noTexts = [
+  'No 🙂',
+  'Hmm… still no? 😅',
+  'I’m starting to negotiate now 🙏',
+  'Okay, I might start praying 😄',
+  'Alright, this is getting suspicious…'
+]
 
 export default function Home() {
+  const [noCount, setNoCount] = useState(0)
+  const [stage, setStage] = useState<'question' | 'invite'>('question')
+
+  const yesScale = 1 + noCount * 0.15
+  const noDisabled = noCount >= noTexts.length - 1
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100 px-4">
+      <AnimatePresence mode="wait">
+
+        {/* QUESTION STAGE */}
+        {stage === 'question' && (
+          <motion.div
+            key="question"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className="max-w-md w-full text-center bg-white/80 backdrop-blur rounded-3xl p-8 shadow-lg"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <p className="text-gray-500 mb-2">
+              Hey Aya — quick question…
+            </p>
+
+            <h1 className="text-3xl font-semibold mb-8">
+              Would you be my Valentine?
+            </h1>
+
+            <div className="flex gap-4 justify-center items-center flex-wrap">
+              <motion.button
+                animate={{ scale: yesScale }}
+                whileTap={{ scale: yesScale * 0.95 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+                onClick={() => setStage('invite')}
+                className="px-6 py-3 rounded-full bg-rose-500 text-white font-medium hover:bg-rose-600 transition"
+              >
+                Yes 💖
+              </motion.button>
+
+              <button
+                disabled={noDisabled}
+                onClick={() => setNoCount(c => c + 1)}
+                className={`px-6 py-3 rounded-full font-medium transition
+                  ${noDisabled
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                {noTexts[Math.min(noCount, noTexts.length - 1)]}
+              </button>
+            </div>
+
+            {noDisabled && (
+              <p className="text-sm text-gray-400 mt-4">
+                I had to try at least 😌
+              </p>
+            )}
+          </motion.div>
+        )}
+
+        {/* INVITE STAGE */}
+        {stage === 'invite' && (
+          <motion.div
+            key="invite"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="max-w-md w-full bg-white/80 backdrop-blur rounded-3xl p-6 shadow-lg"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">💖</div>
+              <p className="text-lg mb-2">That made me smile.</p>
+
+              <p className="text-gray-700 leading-relaxed">
+                Aya, would you join me for dinner<br />
+                <strong>this Saturday night</strong><br />
+                at <strong>Abish Kekilbay 219/1</strong>, Almaty?
+              </p>
+
+              <p className="text-sm text-gray-400 mt-3">
+                — Darkhan
+              </p>
+            </div>
+
+            {/* MAP */}
+            <div className="w-full h-64 rounded-2xl overflow-hidden mt-4">
+              <iframe
+                title="Dinner location map"
+                src="https://www.google.com/maps?q=Abish+Kekilbay+219/1,+Almaty,+Kazakhstan&output=embed"
+                className="w-full h-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </motion.div>
+        )}
+
+      </AnimatePresence>
+    </main>
+  )
 }
